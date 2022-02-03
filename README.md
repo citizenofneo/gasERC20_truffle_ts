@@ -1,5 +1,5 @@
-# truffle_metacoin_ts
-Truffle typescript metacoin box
+# truffle typescript
+Example of an ICO with testing 
 ```
 npm run sol-w
 ```
