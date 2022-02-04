@@ -1,9 +1,10 @@
 pragma solidity ^0.5.1;
 
-import './Ownable.sol';
 import './GasERC20.sol';
 
 contract Crowdsale {
+    using SafeMath for uint256;
+
     address payable owner;
     address me = address(this);
     uint sat = 1e18;
@@ -17,7 +18,7 @@ contract Crowdsale {
     uint256 price = 4; // 0.4 ETH
     // --- Config ---
 
-    uint startScd =  startFst + periodFst;
+    uint startScd = startFst + periodFst;
     uint stopSell = startScd + periodScd;
     GasERC20 token = new GasERC20();
 
@@ -27,12 +28,12 @@ contract Crowdsale {
         token.setAddressToExcludeSenders(owner);
         token.changeServiceWallet(owner);
         token.transferOwnership(owner);
-        token.transfer(owner, token.totalSupply() / 100 * (100 - percentSell) + manualSaleAmount);
+        token.transfer(owner, token.totalSupply().mul(100 - percentSell).div(100).add(manualSaleAmount));
     }
 
     function() external payable {
         require(startFst < block.timestamp && block.timestamp < stopSell, "Period error");
-        uint amount = msg.value / price * 10;
+        uint amount = msg.value.div(price).mul(10);
         require(amount <= token.balanceOf(address(this)), "Infucient token balance in ICO");
         token.transfer(msg.sender, amount);
     }
